@@ -187,7 +187,7 @@ class FarmResource(Resource):
                     kilogram_per_hektar = 572
                 if args['plant_type'] == 'kedelai':
                     kilogram_per_hektar = 625
-                if args['plant_type'] == 'padi':
+                if args['plant_type'] == 'Beras':
                     kilogram_per_hektar = 2494
                 if args['plant_type'] == 'ubi':
                     kilogram_per_hektar = 6884
