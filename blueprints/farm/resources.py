@@ -10,6 +10,7 @@ import dateutil.parser
 from . import *
 from blueprints.users import *
 from blueprints.analyze import *
+from blueprints.analyzeKota import *
 from ast import literal_eval
 
 from ast import literal_eval
@@ -187,7 +188,6 @@ class FarmResource(Resource):
                     kilogram_per_hektar = 572
                 if args['plant_type'] == 'Kedelai':
                     kilogram_per_hektar = 625
-
                 if args['plant_type'] == 'Padi':
                     kilogram_per_hektar = 2494
                 if args['plant_type'] == 'Ubi':
@@ -237,13 +237,13 @@ class FarmResource(Resource):
                             db.session.commit()
 
                         else:
-                            total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                            total_berat_kg = qry.farm_size * kilogram_per_hektar / 10000
                             analyze = Analyze(None, args['plant_type'], new_size, total_berat_kg, 0, plantedAt, readyAt)
                             
                             db.session.add(analyze)
                             db.session.commit()
 
-                    else:
+                    elif before_analyze_qry is None:
                         subs_analyze_qry = Analyze.query.filter(Analyze.jenis_tanaman == qry.plant_type).order_by(Analyze.id.desc()).first()
                         subs_analyze_qry.luas_tanah -= qry.farm_size
 
@@ -253,10 +253,45 @@ class FarmResource(Resource):
                             db.session.commit()
 
                         else:
-                            total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                            total_berat_kg = qry.farm_size * kilogram_per_hektar / 10000
                             analyze = Analyze(None, args['plant_type'], qry.farm_size, total_berat_kg, 0, plantedAt, readyAt)
                             db.session.add(analyze)
                             db.session.commit()
+
+                    # Per Kota
+                    before_analyze_kota_qry = AnalyzeKota.query.filter(AnalyzeKota.jenis_tanaman == args['plant_type']).filter(AnalyzeKota.kota == args['city']).order_by(AnalyzeKota.id.desc()).first()
+                    if before_analyze_kota_qry is not None:
+                        subs_analyze_qry = AnalyzeKota.query.filter(AnalyzeKota.jenis_tanaman == qry.plant_type).filter(AnalyzeKota.kota == args['city']).order_by(AnalyzeKota.id.desc()).first()
+                        subs_analyze_qry.luas_tanah -= qry.farm_size
+                        new_size = before_analyze_kota_qry.luas_tanah + qry.farm_size
+                        
+                        if args['perkiraan_panen'] is not None:
+                            analyzeKota = AnalyzeKota(None, args['plant_type'], args['city'], new_size, args['perkiraan_panen'], plantedAt, readyAt)
+                            db.session.add(analyzeKota)
+                            db.session.commit()
+
+                        else:
+                            total_berat_kg = qry.farm_size * kilogram_per_hektar / 10000
+                            analyzeKota = AnalyzeKota(None, args['plant_type'], args['city'], new_size, total_berat_kg, plantedAt, readyAt)
+                            
+                            db.session.add(analyzeKota)
+                            db.session.commit()
+
+                    elif before_analyze_kota_qry is None:
+                        subs_analyze_qry = AnalyzeKota.query.filter(AnalyzeKota.jenis_tanaman == qry.plant_type).filter(AnalyzeKota.kota == args['city']).order_by(AnalyzeKota.id.desc()).first()
+                        subs_analyze_qry.luas_tanah -= qry.farm_size
+
+                        if args['perkiraan_panen'] is not None:
+                            analyzeKota = AnalyzeKota(None, args['plant_type'], args['city'], qry.farm_size, args['perkiraan_panen'], plantedAt, readyAt)
+                            db.session.add(analyzeKota)
+                            db.session.commit()
+
+                        else:
+                            total_berat_kg = qry.farm_size * kilogram_per_hektar / 10000
+                            analyzeKota = AnalyzeKota(None, args['plant_type'], args['city'], qry.farm_size, total_berat_kg, plantedAt, readyAt)
+                            db.session.add(analyzeKota)
+                            db.session.commit()
+
 
                 elif qry.plant_type == "":
                     
@@ -273,22 +308,54 @@ class FarmResource(Resource):
                             db.session.commit()
 
                         else:
-                            total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                            total_berat_kg = qry.farm_size * kilogram_per_hektar / 10000
                             analyze = Analyze(None, args['plant_type'], new_size, total_berat_kg, 0, plantedAt, readyAt)
                             db.session.add(analyze)
                             db.session.commit()
 
-                    else:
+                    elif before_analyze_qry is None:
                         if args['perkiraan_panen'] is not None:
                             analyze = Analyze(None, args['plant_type'], qry.farm_size, args['perkiraan_panen'], 0, plantedAt, readyAt)
                             db.session.add(analyze)
                             db.session.commit()
                         else:
-                            total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                            total_berat_kg = qry.farm_size * kilogram_per_hektar / 10000
                             analyze = Analyze(None, args['plant_type'], qry.farm_size, total_berat_kg, 0, plantedAt, readyAt)
                             db.session.add(analyze)
                             db.session.commit()
 
+                    # Per Kota
+                    before_analyze_kota_qry = AnalyzeKota.query.filter(AnalyzeKota.jenis_tanaman == args['plant_type']).filter(AnalyzeKota.kota == args['city']).order_by(AnalyzeKota.id.desc()).first()
+                    if before_analyze_kota_qry is not None:
+                        new_size = before_analyze_kota_qry.luas_tanah + qry.farm_size
+
+                        if args['perkiraan_panen'] is not None:
+                            analyzeKota = AnalyzeKota(None, args['plant_type'], args['city'], new_size, args['perkiraan_panen'], plantedAt, readyAt)
+                            db.session.add(analyzeKota)
+                            db.session.commit()
+
+                        else:
+                            total_berat_kg = qry.farm_size * kilogram_per_hektar / 10000
+                            analyzeKota = AnalyzeKota(None, args['plant_type'], args['city'], new_size, total_berat_kg, plantedAt, readyAt)
+                            db.session.add(analyzeKota)
+                            db.session.commit()
+
+                    elif before_analyze_kota_qry is None:
+                        if args['perkiraan_panen'] is not None:
+                            analyzeKota = AnalyzeKota(None, args['plant_type'], args['city'], qry.farm_size, args['perkiraan_panen'], plantedAt, readyAt)
+                            db.session.add(analyzeKota)
+                            db.session.commit()
+                        else:
+                            total_berat_kg = qry.farm_size * kilogram_per_hektar / 10000
+                            analyzeKota = AnalyzeKota(None, args['plant_type'], args['city'], qry.farm_size, total_berat_kg, plantedAt, readyAt)
+                            db.session.add(analyzeKota)
+                            db.session.commit()
+
+
+                total_berat_kg = qry.farm_size * kilogram_per_hektar / 10000
+                qry.perkiraan_panen = total_berat_kg
+                db.session.commit()
+                
                 qry.plant_type = args['plant_type']
                 
             if args['planted_at'] is not None:

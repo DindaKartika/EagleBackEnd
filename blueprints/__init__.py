@@ -63,6 +63,7 @@ from blueprints.commentLike.resources import bp_commentsLike
 from blueprints.farm.resources import bp_farm
 from blueprints.analyze import bp_analyze
 from blueprints.bookmark.resources import bp_bookmark
+from blueprints.analyzeKota import bp_analyzeKota
 
 app.register_blueprint(bp_auth, url_prefix='/login')
 app.register_blueprint(bp_users, url_prefix='/users')
@@ -73,5 +74,6 @@ app.register_blueprint(bp_commentsLike, url_prefix='/commentlikes')
 app.register_blueprint(bp_farm, url_prefix='/farms')
 app.register_blueprint(bp_analyze, url_prefix='/analyze')
 app.register_blueprint(bp_bookmark, url_prefix='/bookmarks')
+app.register_blueprint(bp_analyzeKota, url_prefix='/analyzekota')
 
 db.create_all()
