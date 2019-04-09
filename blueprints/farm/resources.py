@@ -166,7 +166,7 @@ class FarmResource(Resource):
         parser.add_argument('coordinates', location = 'json')
         parser.add_argument('center', location = 'json')
         parser.add_argument('ketinggian', location = 'json')
-        parser.add_argument('perkiraan_panen', location = 'json')
+        parser.add_argument('perkiraan_panen', type=int, location = 'json')
         parser.add_argument('zona', location = 'json')
         parser.add_argument('status_lahan', location = 'json')
         parser.add_argument('status_tanaman', location = 'json')
@@ -219,6 +219,53 @@ class FarmResource(Resource):
                 if args['plant_type'] == 'Wortel':
                     kilogram_per_hektar = 8906
                 
+                # if qry.plant_type != "":
+                #     created_at = datetime.now()
+                #     updated_at = datetime.now()
+
+                #     before_analyze_qry = Analyze.query.filter(Analyze.jenis_tanaman == args['plant_type']).order_by(Analyze.id.desc()).first()
+                #     if before_analyze_qry is not None:
+                #         subs_analyze_qry = Analyze.query.filter(Analyze.jenis_tanaman == qry.plant_type).order_by(Analyze.id.desc()).first()
+                #         subs_analyze_qry.luas_tanah -= qry.farm_size
+                #         new_size = before_analyze_qry.luas_tanah + qry.farm_size
+                        
+                #         total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                #         new_production = before_analyze_qry.avg_panen + total_berat_kg
+                #         analyze = Analyze(None, args['plant_type'], new_size, new_production, 0, created_at, updated_at)
+                        
+                #         db.session.add(analyze)
+                #         db.session.commit()
+
+
+                #     else:
+                #         subs_analyze_qry = Analyze.query.filter(Analyze.jenis_tanaman == qry.plant_type).order_by(Analyze.id.desc()).first()
+                #         subs_analyze_qry.luas_tanah -= qry.farm_size
+                #         total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                #         analyze = Analyze(None, args['plant_type'], qry.farm_size, total_berat_kg, 0, created_at, updated_at)
+                #         db.session.add(analyze)
+                #         db.session.commit()
+
+                # elif qry.plant_type == "":
+                #     created_at = datetime.now()
+                #     updated_at = datetime.now()
+
+                #     before_analyze_qry = Analyze.query.filter(Analyze.jenis_tanaman == args['plant_type']).order_by(Analyze.id.desc()).first()
+                #     if before_analyze_qry is not None:
+                #         new_size = before_analyze_qry.luas_tanah + qry.farm_size
+                #         total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                #         new_production = before_analyze_qry.avg_panen + total_berat_kg
+                #         analyze = Analyze(None, args['plant_type'], new_size, new_production, 0, created_at, updated_at)
+                #         db.session.add(analyze)
+                #         db.session.commit()
+
+                #     else:
+                #         total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                #         analyze = Analyze(None, args['plant_type'], qry.farm_size, total_berat_kg, 0, created_at, updated_at)
+                #         db.session.add(analyze)
+                #         db.session.commit()
+
+                # qry.plant_type = args['plant_type']
+
                 if qry.plant_type != "":
                     created_at = datetime.now()
                     updated_at = datetime.now()
@@ -229,21 +276,35 @@ class FarmResource(Resource):
                         subs_analyze_qry.luas_tanah -= qry.farm_size
                         new_size = before_analyze_qry.luas_tanah + qry.farm_size
                         
-                        total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
-                        new_production = before_analyze_qry.avg_panen + total_berat_kg
-                        analyze = Analyze(None, args['plant_type'], new_size, new_production, 0, created_at, updated_at)
-                        
-                        db.session.add(analyze)
-                        db.session.commit()
+                        if args['perkiraan_panen'] is not None:
+                            new_production = before_analyze_qry.avg_panen + args['perkiraan_panen']
+                            analyze = Analyze(None, args['plant_type'], new_size, new_production, 0, created_at, updated_at)
+
+                            db.session.add(analyze)
+                            db.session.commit()
+                        else:
+                            total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                            new_production = before_analyze_qry.avg_panen + total_berat_kg
+                            analyze = Analyze(None, args['plant_type'], new_size, new_production, 0, created_at, updated_at)
+                            
+                            db.session.add(analyze)
+                            db.session.commit()
 
 
                     else:
                         subs_analyze_qry = Analyze.query.filter(Analyze.jenis_tanaman == qry.plant_type).order_by(Analyze.id.desc()).first()
                         subs_analyze_qry.luas_tanah -= qry.farm_size
-                        total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
-                        analyze = Analyze(None, args['plant_type'], qry.farm_size, total_berat_kg, 0, created_at, updated_at)
-                        db.session.add(analyze)
-                        db.session.commit()
+
+                        if args['perkiraan_panen'] is not None:
+                            analyze = Analyze(None, args['plant_type'], qry.farm_size, args['perkiraan_panen'], 0, created_at, updated_at)
+                            db.session.add(analyze)
+                            db.session.commit()
+
+                        else:
+                            total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                            analyze = Analyze(None, args['plant_type'], qry.farm_size, total_berat_kg, 0, created_at, updated_at)
+                            db.session.add(analyze)
+                            db.session.commit()
 
                 elif qry.plant_type == "":
                     created_at = datetime.now()
@@ -252,17 +313,30 @@ class FarmResource(Resource):
                     before_analyze_qry = Analyze.query.filter(Analyze.jenis_tanaman == args['plant_type']).order_by(Analyze.id.desc()).first()
                     if before_analyze_qry is not None:
                         new_size = before_analyze_qry.luas_tanah + qry.farm_size
-                        total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
-                        new_production = before_analyze_qry.avg_panen + total_berat_kg
-                        analyze = Analyze(None, args['plant_type'], new_size, new_production, 0, created_at, updated_at)
-                        db.session.add(analyze)
-                        db.session.commit()
+
+                        if args['perkiraan_panen'] is not None:
+                            new_production = before_analyze_qry.avg_panen + args['perkiraan_panen']
+                            analyze = Analyze(None, args['plant_type'], new_size, new_production, 0, created_at, updated_at)
+                            db.session.add(analyze)
+                            db.session.commit()
+
+                        else:
+                            total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                            new_production = before_analyze_qry.avg_panen + total_berat_kg
+                            analyze = Analyze(None, args['plant_type'], new_size, new_production, 0, created_at, updated_at)
+                            db.session.add(analyze)
+                            db.session.commit()
 
                     else:
-                        total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
-                        analyze = Analyze(None, args['plant_type'], qry.farm_size, total_berat_kg, 0, created_at, updated_at)
-                        db.session.add(analyze)
-                        db.session.commit()
+                        if args['perkiraan_panen'] is not None:
+                            analyze = Analyze(None, args['plant_type'], qry.farm_size, args['perkiraan_panen'], 0, created_at, updated_at)
+                            db.session.add(analyze)
+                            db.session.commit()
+                        else:
+                            total_berat_kg = (qry.farm_size * kilogram_per_hektar / 10000)
+                            analyze = Analyze(None, args['plant_type'], qry.farm_size, total_berat_kg, 0, created_at, updated_at)
+                            db.session.add(analyze)
+                            db.session.commit()
 
                 qry.plant_type = args['plant_type']
             
