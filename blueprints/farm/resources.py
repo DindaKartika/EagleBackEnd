@@ -2,7 +2,7 @@ import json, logging
 from flask import Blueprint
 from flask_restful import Api, Resource, reqparse, marshal
 from flask_jwt_extended import jwt_required, get_jwt_claims
-from datetime import datetime
+from datetime import datetime, timedelta
 from blueprints.users import *
 from sqlalchemy import and_
 import dateutil.parser
@@ -59,11 +59,11 @@ class FarmResource(Resource):
 
             if args['planted_at'] is not None:
                 datetime_object = dateutil.parser.parse(args['planted_at'])
-                qry = qry.filter(and_(Farms.planted_at >= datetime_object, Farms.planted_at < datetime_object + datetime.timedelta(days=1)))
+                qry = qry.filter(and_(Farms.planted_at >= datetime_object, Farms.planted_at < datetime_object + timedelta(days=1)))
             
             if args['ready_at'] is not None:
                 datetime_object = dateutil.parser.parse(args['ready_at'])
-                qry = qry.filter(and_(Farms.ready_at >= datetime_object, Farms.ready_at < datetime_object + datetime.timedelta(days=1)))
+                qry = qry.filter(and_(Farms.ready_at >= datetime_object, Farms.ready_at < datetime_object + timedelta(days=1)))
 
             if args['address'] is not None:
                 qry = qry.filter(Farms.address.like("%"+args['address']+"%"))
@@ -179,43 +179,43 @@ class FarmResource(Resource):
 
             if args['plant_type'] is not None:
 
-                if args['plant_type'] == 'jagung':
+                if args['plant_type'] == 'Jagung':
                     kilogram_per_hektar = 2655
-                if args['plant_type'] == 'kacang hijau':
+                if args['plant_type'] == 'Kacang Hijau':
                     kilogram_per_hektar = 594
-                if args['plant_type'] == 'kacang tanah':
+                if args['plant_type'] == 'Kacang Tanah':
                     kilogram_per_hektar = 572
-                if args['plant_type'] == 'kedelai':
+                if args['plant_type'] == 'Kedelai':
                     kilogram_per_hektar = 625
-                if args['plant_type'] == 'Beras':
+                if args['plant_type'] == 'Padi':
                     kilogram_per_hektar = 2494
-                if args['plant_type'] == 'ubi':
+                if args['plant_type'] == 'Ubi':
                     kilogram_per_hektar = 6884
-                if args['plant_type'] == 'bawang merah':
+                if args['plant_type'] == 'Bawang Merah':
                     kilogram_per_hektar = 4723
-                if args['plant_type'] == 'bawang putih':
+                if args['plant_type'] == 'Bawang Putih':
                     kilogram_per_hektar = 4619
-                if args['plant_type'] == 'cabai':
+                if args['plant_type'] == 'Cabai':
                     kilogram_per_hektar = 3496
-                if args['plant_type'] == 'kacang panjang':
+                if args['plant_type'] == 'Kacang Panjang':
                     kilogram_per_hektar = 3452
-                if args['plant_type'] == 'kangkung':
+                if args['plant_type'] == 'Kangkung':
                     kilogram_per_hektar = 2944
-                if args['plant_type'] == 'kentang':
+                if args['plant_type'] == 'Kentang':
                     kilogram_per_hektar = 7826
-                if args['plant_type'] == 'ketimun':
+                if args['plant_type'] == 'Mentimun':
                     kilogram_per_hektar = 5423
-                if args['plant_type'] == 'kubis':
+                if args['plant_type'] == 'Kubis':
                     kilogram_per_hektar = 8068
-                if args['plant_type'] == 'lobak':
+                if args['plant_type'] == 'Lobak':
                     kilogram_per_hektar = 3732
-                if args['plant_type'] == 'sawi':
+                if args['plant_type'] == 'Sawi':
                     kilogram_per_hektar = 5216
-                if args['plant_type'] == 'terung':
+                if args['plant_type'] == 'Terung':
                     kilogram_per_hektar = 6196
-                if args['plant_type'] == 'tomat':
+                if args['plant_type'] == 'Tomat':
                     kilogram_per_hektar = 8794
-                if args['plant_type'] == 'wortel':
+                if args['plant_type'] == 'Wortel':
                     kilogram_per_hektar = 8906
                 
                 if qry.plant_type != "":
@@ -293,7 +293,10 @@ class FarmResource(Resource):
             if args['zona'] is not None:
                 qry.attached_zona = args['zona']
             if args['status_lahan'] is not None:
-                qry.attached_status_lahan = args['status_lahan']
+                if args['status_lahan'] == 'true':
+                    qry.status_lahan = 'dijual'
+                elif args['status_lahan'] == 'false':
+                    qry.status_lahan = 'tidak'
             if args['status_tanaman'] is not None:
                 qry.attached_status_tanaman = args['status_tanaman']
 
