@@ -100,12 +100,9 @@ class Analyze(db.Model):
 class AnalyzeResource(Resource):
     def get(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('p', type = int, location = 'args', default = 1)
-        parser.add_argument('rp', type = int, location = 'args', default = 20)
         parser.add_argument('jenis_tanaman', location='args')
         args = parser.parse_args()
 
-        offsets = (args['p'] * args['rp']) - args['rp']
         analyze_qry = Analyze.query
 
         if args['jenis_tanaman'] is not None:
@@ -127,6 +124,8 @@ class AnalyzeResource(Resource):
                 else:
                     output_luas_tanah.append(0)
                     output_avg_panen.append(0)
+
+        
 
         return {'dates': output_dates, 'luas_tanah': output_luas_tanah, 'avg_panen': output_avg_panen, 'data': marshal(output, Analyze.response_field)}, 200, {'Content_type' : 'application/json'}
 
