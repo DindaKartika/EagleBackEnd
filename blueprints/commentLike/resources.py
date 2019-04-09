@@ -27,12 +27,11 @@ class CommentsLikeResources(Resource):
         if qry is not None:
             return output, 200, {'Content_type' : 'application/json'}
         else:
-            return {'status' : 'NOT_FOUND', 'message' : 'ID not found'}, 404, {'Content_type' : 'application/json'}
+            return {'status' : 'NOT_FOUND', 'message' : 'Comment Like not found'}, 404, {'Content_type' : 'application/json'}
 
     @jwt_required
     def post(self, id_like):
-        jwtClaims = get_jwt_claims() ##  buat kalo butuh data klaim
-
+        jwtClaims = get_jwt_claims()
         liked_by = jwtClaims['id']
 
         qry = CommentsLike.query.filter_by(id_comment = id_like).filter(CommentsLike.liked_by == jwtClaims['id']).first()
@@ -54,43 +53,41 @@ class CommentsLikeResources(Resource):
             
             return comment, 200, {'Content_type' : 'application/json'}
         else:
-            return "id sudah dipakai", 200, {'Content_type' : 'application/json'}
+            return "Comment sudah di Like oleh User", 200, {'Content_type' : 'application/json'}
 
 
     @jwt_required
     def put(self, id_like):
-        qry = CommentsLike.query.get(id_like)
         parser = reqparse.RequestParser()
         parser.add_argument('id_comment', location = 'json')
         parser.add_argument('liked_by', location = 'json')
         args = parser.parse_args()
         
-        if args['id_comment'] is not None:
-            qry.id_comment = args['id_comment']
-        if args['liked_by'] is not None:
-            qry.liked_by = args['liked_by']
-            
-        qry.updated_at = datetime.datetime.now()
-
-        db.session.commit()
+        qry = CommentsLike.query.get(id_like)
         if qry is not None:
+            if args['id_comment'] is not None:
+                qry.id_comment = args['id_comment']
+            if args['liked_by'] is not None:
+                qry.liked_by = args['liked_by']
+
+            qry.updated_at = datetime.datetime.now()
+            db.session.commit()
             return marshal(qry, CommentsLike.response_field), 200, {'Content_type' : 'application/json'}
+
         else:
-            return {'status' : 'NOT_FOUND', 'message' : 'ID not found'}, 404, {'Content_type' : 'application/json'}
+            return {'status' : 'NOT_FOUND', 'message' : 'Comment Like not found'}, 404, {'Content_type' : 'application/json'}
 
     @jwt_required
     def delete(self, id_like):
         jwtClaims = get_jwt_claims()
 
         qry = CommentsLike.query.filter_by(id_comment = id_like).filter(CommentsLike.liked_by == jwtClaims['id']).first()
-
-        db.session.delete(qry)
-        db.session.commit()
-
         if qry is not None:
+            db.session.delete(qry)
+            db.session.commit()
             return 'Deleted', 200, {'Content_type' : 'application/json'}
         else:
-            return {'status' : 'NOT_FOUND', 'message' : 'ID not found'}, 404, {'Content_type' : 'application/json'}
+            return {'status' : 'NOT_FOUND', 'message' : 'Comment Like not found'}, 404, {'Content_type' : 'application/json'}
 
     def options(self, id_like = None):
         return {}, 200

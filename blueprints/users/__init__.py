@@ -10,6 +10,7 @@ class Users(db.Model):
     display_name = db.Column(db.String(50))
     headline = db.Column(db.String(50))
     profile_picture = db.Column(db.String(255))
+    cover_photo = db.Column(db.String(255))
     gender = db.Column(db.String(20))
     date_of_birth = db.Column(db.String(50))
     address = db.Column(db.String(50))
@@ -32,6 +33,7 @@ class Users(db.Model):
         "display_name" : fields.String,
         "headline" : fields.String,
         "profile_picture" : fields.String,
+        "cover_photo" : fields.String,
         "gender" : fields.String,
         "date_of_birth" : fields.String,
         "address" : fields.String,
@@ -47,7 +49,7 @@ class Users(db.Model):
         "status" : fields.String
     }
 
-    def __init__(self, id, username, password, email, display_name, headline, profile_picture, gender, date_of_birth, address, phone_number, facebook_link, instagram_link, twitter_link, other_link, created_at, updated_at, post_count, job, status):
+    def __init__(self, id, username, password, email, display_name, headline, profile_picture, cover_photo, gender, date_of_birth, address, phone_number, facebook_link, instagram_link, twitter_link, other_link, created_at, updated_at, post_count, job, status):
         self.id = id
         self.username = username
         self.password = password
@@ -55,6 +57,7 @@ class Users(db.Model):
         self.display_name = display_name
         self.headline = headline
         self.profile_picture = profile_picture
+        self.cover_photo = cover_photo
         self.gender = gender
         self.date_of_birth = date_of_birth
         self.address = address
