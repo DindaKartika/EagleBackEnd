@@ -29,5 +29,4 @@ after_script:
 - ssh-keyscan -H $SSH_IP >> ~/.ssh/known_hosts
 - ssh -v -i deploy_rsa $SSH_USER@$SSH_IP DIR=$ROOT_DIR 'bash -s' < deploy.sh
 before_install:
-- openssl aes-256-cbc -K $encrypted_5669591248fd_key -iv $encrypted_5669591248fd_iv
-  -in deploy_rsa.enc -out deploy_rsa -d
+- openssl aes-256-cbc -K $encrypted_7ca8229f15ae_key -iv $encrypted_7ca8229f15ae_iv -in deploy_rsa.enc -out deploy_rsa -d
