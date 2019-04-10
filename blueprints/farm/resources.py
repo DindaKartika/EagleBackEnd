@@ -27,7 +27,7 @@ class FarmResource(Resource):
         if id_farm == None:
             parser = reqparse.RequestParser()
             parser.add_argument('p', type = int, location = 'args', default = 1)
-            parser.add_argument('rp', type = int, location = 'args', default = 20)
+            parser.add_argument('rp', type = int, location = 'args', default = 200)
             parser.add_argument('search', location = 'args')
             parser.add_argument('id_user', location = 'args')
             parser.add_argument('planted_at', location = 'args')
