@@ -15,6 +15,7 @@ CORS(app)
 
 
 ### Konfigurasi database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://lahanku:lahanku123@lahanku.czxr0uxpdmvp.ap-southeast-1.rds.amazonaws.com:3306/lahanku'
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:alphatech123@localhost:3306/final_project'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://ok:ok@localhost:3306/tanahair'
