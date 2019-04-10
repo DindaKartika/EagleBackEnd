@@ -69,6 +69,17 @@ class AnalyzeResource(Resource):
                 analyze_qry_first = analyze_qry.filter(Analyze.jenis_tanaman == args['jenis_tanaman']).filter(Analyze.planted_at.like("%"+str(yesterday)+"%")).order_by(Analyze.id.desc()).first()
                 analyze_qry_all = analyze_qry.filter(Analyze.jenis_tanaman == args['jenis_tanaman']).filter(Analyze.ready_at.like("%"+str(tomorrow)+"%")).order_by(Analyze.id.desc()).all()
 
+                # counter2 = 0
+                # for element in range(0, 30):
+                #     yesterday_min1 = datetime.now().date() + timedelta(days=-(element+counter2))
+                #     before_analyze_qry_first = analyze_qry.filter(Analyze.jenis_tanaman == args['jenis_tanaman']).filter(Analyze.planted_at.like("%"+str(yesterday_min1)+"%")).order_by(Analyze.id.desc()).first()
+                #     if before_analyze_qry_first is not None:
+                #         break
+                #     else:
+                #         counter2 += 1
+                
+                # return {"test": marshal(before_analyze_qry_first, Analyze.response_field)}
+
                 total = 0
                 for element in analyze_qry_all:
                     total += element.avg_panen
@@ -80,6 +91,14 @@ class AnalyzeResource(Resource):
                 if analyze_qry_first is not None:
                     output_luas_tanah.append(analyze_qry_first.luas_tanah)
                 else:
+                    # if before_analyze_qry_first is not None:
+                    #     output_luas_tanah.append(before_analyze_qry_first.luas_tanah)
+                    # else:
+                    #     counter2 += 1
+                    #     yesterday_min1 = datetime.now().date() + timedelta(days=-(element+counter2))
+                    #     before_analyze_qry_first = analyze_qry.filter(Analyze.jenis_tanaman == args['jenis_tanaman']).filter(Analyze.planted_at.like("%"+str(yesterday_min1)+"%")).order_by(Analyze.id.desc()).first()
+
+
                     output_luas_tanah.append(0)
 
         return {'past_output_dates': past_output_dates, 'future_output_dates': future_output_dates, 'luas_tanah': output_luas_tanah, 'avg_panen': output_avg_panen, 'data': marshal(output, Analyze.response_field)}, 200, {'Content_type' : 'application/json'}
