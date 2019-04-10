@@ -10,8 +10,8 @@ from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)
+# app = Flask(__name__)
+# CORS(app)
 
 
 ### Konfigurasi database
@@ -20,7 +20,7 @@ CORS(app)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://ok:ok@localhost:3306/tanahair'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://ok:ok@localhost:3306/tanahair_demo'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:bismillah@127.0.0.1:3306/final_project_edit_2'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@0.0.0.0:3306/tanahair'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://lahanku:lahanku123@lahanku.czxr0uxpdmvp.ap-southeast-1.rds.amazonaws.com:3306/lahanku''
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
