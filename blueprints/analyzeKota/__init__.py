@@ -51,6 +51,11 @@ class AnalyzeKotaResource(Resource):
 
         analyze_kota_qry = AnalyzeKota.query
 
+        users_qry = Users.query.all()
+        total_user = 0
+        for element in users_qry:  
+            total_user += 1
+
         if args['jenis_tanaman'] is not None:
             dates = [29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18 ,17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
             output = []
@@ -59,6 +64,7 @@ class AnalyzeKotaResource(Resource):
             output_luas_tanah = []
             output_avg_panen = []
             counter = 0
+            total_lahan = 0
             for date in dates:
                 analyze_kota_qry = AnalyzeKota.query
                 yesterday = datetime.now().date() + timedelta(days=-date)
@@ -80,10 +86,16 @@ class AnalyzeKotaResource(Resource):
 
                 if analyze_kota_qry_first is not None:
                     output_luas_tanah.append(analyze_kota_qry_first.luas_tanah)
+                    total_lahan = analyze_kota_qry_first.luas_tanah
                 else:
                     output_luas_tanah.append(0)
+                    # total_lahan = 0
 
-        return {'past_output_dates': past_output_dates, 'future_output_dates': future_output_dates, 'luas_tanah': output_luas_tanah, 'avg_panen': output_avg_panen, 'data': marshal(output, AnalyzeKota.response_field)}, 200, {'Content_type' : 'application/json'}
+            total_panen = 0
+            for element in output_avg_panen:
+                total_panen += element
+
+        return {'past_output_dates': past_output_dates, 'future_output_dates': future_output_dates, 'luas_tanah': output_luas_tanah, 'avg_panen': output_avg_panen, 'total_user': total_user, 'total_panen': total_panen, 'total_lahan': total_lahan, 'data': marshal(output, AnalyzeKota.response_field)}, 200, {'Content_type' : 'application/json'}
 
     def options(self):
         return {}, 200

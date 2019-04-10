@@ -50,6 +50,11 @@ class AnalyzeResource(Resource):
 
         analyze_qry = Analyze.query
 
+        users_qry = Users.query.all()
+        total_user = 0
+        for element in users_qry:  
+            total_user += 1
+
         if args['jenis_tanaman'] is not None:
             dates = [29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18 ,17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
             output = []
@@ -90,6 +95,7 @@ class AnalyzeResource(Resource):
 
                 if analyze_qry_first is not None:
                     output_luas_tanah.append(analyze_qry_first.luas_tanah)
+                    total_lahan = analyze_qry_first.luas_tanah
                 else:
                     # if before_analyze_qry_first is not None:
                     #     output_luas_tanah.append(before_analyze_qry_first.luas_tanah)
@@ -97,11 +103,14 @@ class AnalyzeResource(Resource):
                     #     counter2 += 1
                     #     yesterday_min1 = datetime.now().date() + timedelta(days=-(element+counter2))
                     #     before_analyze_qry_first = analyze_qry.filter(Analyze.jenis_tanaman == args['jenis_tanaman']).filter(Analyze.planted_at.like("%"+str(yesterday_min1)+"%")).order_by(Analyze.id.desc()).first()
-
-
                     output_luas_tanah.append(0)
+                    # total_lahan = 0
 
-        return {'past_output_dates': past_output_dates, 'future_output_dates': future_output_dates, 'luas_tanah': output_luas_tanah, 'avg_panen': output_avg_panen, 'data': marshal(output, Analyze.response_field)}, 200, {'Content_type' : 'application/json'}
+            total_panen = 0
+            for element in output_avg_panen:
+                total_panen += element
+            
+        return {'past_output_dates': past_output_dates, 'future_output_dates': future_output_dates, 'luas_tanah': output_luas_tanah, 'avg_panen': output_avg_panen, 'total_user': total_user, 'total_panen': total_panen, 'total_lahan': total_lahan, 'data': marshal(output, Analyze.response_field)}, 200, {'Content_type' : 'application/json'}
 
     def options(self):
         return {}, 200
